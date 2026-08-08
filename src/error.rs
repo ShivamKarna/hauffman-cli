@@ -2,6 +2,7 @@ use std::fmt;
 use std::io;
 
 //* Erros enum
+#[allow(dead_code)]
 #[derive(Debug)]
 pub enum HauffmanError {
     Io(io::Error),
