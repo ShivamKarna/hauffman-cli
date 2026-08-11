@@ -1,5 +1,6 @@
 mod error;
 mod hauffman;
+use std::process;
 
 enum Command<'a> {
     Encode { filepath: &'a str },
@@ -12,8 +13,8 @@ impl<'a> Command<'a> {
     fn parse(args: &'a [String]) -> Result<Command<'a>, HauffmanError> {
         match args {
             [_, flag, filepath, ..] => match flag.as_ref() {
-                "-en" => Ok(Command::Encode { filepath: filepath }),
-                "-den" => Ok(Command::Decode { filepath: filepath }),
+                "-en" => Ok(Command::Encode { filepath }),
+                "-den" => Ok(Command::Decode { filepath }),
                 _ => Err(HauffmanError::UnknownFlag),
             },
             _ => Err(HauffmanError::NoArguments),
@@ -51,10 +52,15 @@ impl<'a> Command<'a> {
     }
 }
 
-fn main() -> Result<(), HauffmanError> {
+fn main() {
     let args: Vec<String> = std::env::args().collect();
+    if let Err(err) = run_cmd(&args) {
+        eprintln!("{}", err);
+        process::exit(1);
+    }
+}
 
-    let command = Command::parse(&args)?;
-
+fn run_cmd(args: &[String]) -> Result<(), HauffmanError> {
+    let command = Command::parse(args)?;
     command.run()
 }
