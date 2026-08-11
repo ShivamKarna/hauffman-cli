@@ -2,16 +2,17 @@ use std::fmt;
 use std::io;
 
 //* Erros enum
-#[allow(dead_code)]
 #[derive(Debug)]
 pub enum HauffmanError {
     Io(io::Error),
     // user provided empty file to encode
     EmptyFile,
-    //TODO: Provided file doesn't has .hauff or .txt ( i will decide later which extension to keep in the code)
     InvalidHeader,
     // the specific string/word/letter was not valid , that could be encoded.
     CorruptedData,
+    // InvalidFlag,
+    UnknownFlag, // added for flag checking
+    NoArguments, // user entered 0 arguments, means like they just ran ,"cargo run"
 }
 
 impl fmt::Display for HauffmanError {
@@ -21,7 +22,6 @@ impl fmt::Display for HauffmanError {
             HauffmanError::EmptyFile => {
                 write!(f, "Empty file was given !, Cannot compress empty file.")
             }
-            // ! Reminder to set either both or one of the file extension.. ".txt" or ".hauff"
             HauffmanError::InvalidHeader => write!(
                 f,
                 "File is not valid, i.e. Should be either .hauff or .txt file"
@@ -30,6 +30,14 @@ impl fmt::Display for HauffmanError {
             HauffmanError::CorruptedData => {
                 write!(f, "Failed to decompress: The byte is corrupted.")
             }
+            HauffmanError::UnknownFlag => write!(
+                f,
+                "Unknown flag used for encoding/decoding. Use '-en' or '-den'."
+            ),
+            HauffmanError::NoArguments => write!(
+                f,
+                "Hauffman CLI ,Missing arguments!\nUsage:\n  cargo run -- -en <filename.txt>\n  cargo run -- -den <filename.en.hauff>"
+            ),
         }
     }
 }
